@@ -21,3 +21,7 @@ PROJECT_ID="de-finnhub"
 mkdir ~/.config/gcloud
 gcloud iam service-accounts keys create ~/.config/gcloud/terraform.json \
 --iam-account=terraform-iam@$PROJECT_ID.iam.gserviceaccount.com
+
+
+SSH
+ssh-keygen -t rsa -f ~/.ssh/finnhub-ssh -C jafa -b 2048
