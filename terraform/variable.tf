@@ -1,5 +1,5 @@
 locals {
-  data_lake_bucket = "twitter_data_lake"
+  data_lake_bucket = "de-finnhub_data_lake"
 }
 
 variable "project" {
