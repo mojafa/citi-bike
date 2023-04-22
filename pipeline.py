@@ -49,14 +49,15 @@ data = json.loads(response.text)
 # Create dashboards using a data visualization tool such as Google Data Studio, connecting to the BigQuery table.
 
 @task(name="pull_stock_data", log_prints=True)
-def pull_financial_data
 def pull_financial_data(symbols, finnhub_key, from_date, to_date):
     #Dictionary to store raw data
-    stock_data = {}
-    #5 calls can be made to aplha vantage per minute. So after every 5 calls we will pause for 1 min with 2 secs buffer
-    #Counter to track calls
+    exchange_data = {}
+    start_time = '2022-01-01'
+    end_time = '2022-03-31'
+
+    #Counter to keep track of API calls
     counter = 1
-    #Iterate through each symbol
+
     for symbol in symbols.keys():
         #Use try to avoid unanticipated API errors
         try:
