@@ -40,3 +40,4 @@ logs/
 /week_5_batch_processing/code/.ipynb_checkpoints/
 /week_5_batch_processing/code/.idea/
 *.csv.*
+.env
