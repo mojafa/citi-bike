@@ -6,9 +6,39 @@ import time
 import datetime
 import subprocess
 from prefect_gcp import GcpCredentials, GcsBucket
-from prefect import flow,task
+from prefect import task, Flow
 from prefect.task_runners import SequentialTaskRunner
 from prefect.deployments import Deployment
+
+
+
+@task
+def run_pipeline():
+    # Get the current date and time
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Trigger the pipeline
+    trigger_pipeline(now)
+
+# Schedule the flow to run at a specific time every day
+with Flow('daily-pipeline') as flow:
+    run_pipeline()
+
+flow.schedule = Schedule(clocks=[IntervalClock(start_date=datetime.datetime(2022, 1, 1), interval=datetime.timedelta(days=1))])
+
+import requests
+import json
+
+start_time = '2022-01-01'
+end_time = '2022-03-31'
+resolution = 'D'
+
+response = requests.get(f'https://finnhub.io/api/v1/forex/candle?symbol=XAUUSD&resolution={resolution}&from={start_time}&to={end_time}&token=YOUR_API_KEY')
+response = requests.get(f'https://finnhub.io/api/v1/forex/candle?symbol=^DJI&resolution={resolution}&from={start_time}&to={end_time}&token=YOUR_API_KEY')
+
+data = json.loads(response.text)
+
+# Store data in temporary location, such as Prefect's storage
 
 
 #Part 1 - Fetch data
