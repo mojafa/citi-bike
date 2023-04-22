@@ -9,11 +9,11 @@ terraform {
 }
 
 provider "google" {
-  project = var.project
+  project = var.project_name
   region = var.region
 }
 
-# Data Lake Bucket
+# Data lake bucket - Staging bucket
 resource "google_storage_bucket" "data-lake-bucket" {
   name          = var.gcs_bucket_name
   location      = var.region
@@ -23,29 +23,24 @@ resource "google_storage_bucket" "data-lake-bucket" {
   uniform_bucket_level_access = true
 
   versioning {
-    enabled = true
-  }
-
-  lifecycle_rule {
-    action {
-      type = "Delete"
-    }
-    condition {
-      age = 30  // days
-    }
+    enabled     = true
   }
   force_destroy = true
+
 }
 
-# Data Warehouse - Dataset
+
+# DWH - Dataset
 resource "google_bigquery_dataset" "dataset" {
-  dataset_id = var.BQ_DATASET
-  project    = var.project
+  dataset_id = var.bq_dataset_name
+  project    = var.project_name
   location   = var.region
   delete_contents_on_destroy = true
 }
 
+
 # Dataproc cluster
+
 resource "google_dataproc_cluster" "dataproc-cluster" {
   name     = var.spark_cluster_name
   project    = var.project_name
@@ -70,6 +65,8 @@ resource "google_dataproc_cluster" "dataproc-cluster" {
         "dataproc:dataproc.allow.zero.workers" = "true"
       }
     }
+
+
 
   }
 }

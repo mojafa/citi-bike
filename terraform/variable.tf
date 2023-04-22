@@ -1,10 +1,7 @@
-locals {
-  data_lake_bucket = "data_lake"
-}
-
-variable "project" {
+#Create variable names
+variable "project_name" {
+  description = "GCP project ID"
   default = "de-finnhub"
-  type = string
 }
 
 variable "region" {
@@ -13,29 +10,22 @@ variable "region" {
   type = string
 }
 
+variable "gcs_bucket_name" {
+  description = "GCS bucket name"
+  default = "finnhub-gcs"
+}
+
 variable "storage_class" {
-  description = "Storage class type for your bucket"
+  description = "Storage class type for your bucket. Check official docs for more info."
   default = "STANDARD"
 }
 
-variable "BQ_DATASET" {
-  description = "BigQuery Dataset that raw data (from GCS) will be written to"
-  type = string
-  default = "finnhub"
+variable "bq_dataset_name" {
+  description = "BQ dataset name"
+  default = "finnhub_bq"
 }
 
-variable "instance" {
-  type = string
-  default = "finnhub-vm"
-}
-
-variable "machine_type" {
-  type = string
-  default = "e2-standard-4"
-}
-
-variable "zone" {
-  description = "Region for VM"
-  type = string
-  default = "northamerica-northeast1-a"
+variable "spark_cluster_name" {
+  description = "DataProc cluster name"
+  default = "finnhub-spark-cluster"
 }
