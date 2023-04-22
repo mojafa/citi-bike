@@ -70,3 +70,16 @@ resource "google_dataproc_cluster" "dataproc-cluster" {
 
   }
 }
+
+# Configure a Prefect agent to run on the cluster
+resource "prefect_agent_dataproc" "example_agent" {
+  cluster_name = google_dataproc_cluster.example_cluster.name
+  project = "your-project"
+  region = "us-central1"
+  zone = "us-central1-a"
+  image_version = "2.0-debian10"
+  storage_bucket = "your-bucket-name"
+  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  service_account_name = "your-service-account-name"
+  logging_bucket = "your-logging-bucket"
+}
