@@ -11,13 +11,11 @@ terraform {
 provider "google" {
   project = var.project
   region = var.region
-  // credentials = file(var.credentials)  # Use this if you do not want to set env-var GOOGLE_APPLICATION_CREDENTIALS
 }
 
 # Data Lake Bucket
-# Ref: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket
 resource "google_storage_bucket" "data-lake-bucket" {
-  name          = "${local.data_lake_bucket}_${var.project}" # Concatenating DL bucket & Project name for unique naming
+  name          = var.gcs_bucket_name
   location      = var.region
 
   # Optional, but recommended settings:
@@ -36,39 +34,42 @@ resource "google_storage_bucket" "data-lake-bucket" {
       age = 30  // days
     }
   }
-
   force_destroy = true
 }
 
-# Data Warehouse
-# Ref: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/bigquery_dataset
-resource "google_bigquery_dataset" "my-dataset" {
+# Data Warehouse - Dataset
+resource "google_bigquery_dataset" "dataset" {
   dataset_id = var.BQ_DATASET
   project    = var.project
   location   = var.region
+  delete_contents_on_destroy = true
 }
 
-# Virtual Machine Instance
-# Ref: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance
-# We need more than 10 GB, ideally 100 GB.
-resource "google_compute_instance" "my-instance" {
-  name         = var.instance
-  machine_type = var.machine_type
-  zone         = var.zone
-  allow_stopping_for_update = true
+# Dataproc cluster
+resource "google_dataproc_cluster" "dataproc-cluster" {
+  name     = var.spark_cluster_name
+  project    = var.project_name
+  region   = var.region
 
-  boot_disk {
-    initialize_params {
-      size = 100
-      image = "ubuntu-os-cloud/ubuntu-2004-lts"
-    }
-  }
+  cluster_config {
+    staging_bucket = var.gcs_bucket_name
 
-  network_interface {
-    network    = "default"
-    subnetwork = "default"
-    access_config {
-      // Ephemeral IP
+    master_config {
+      num_instances = 1
+      machine_type  = "n2-standard-2"
+      disk_config {
+        boot_disk_type    = "pd-ssd"
+        boot_disk_size_gb = 50
+      }
     }
+
+    # Override or set some custom properties
+    software_config {
+      image_version = "2.0-debian10"
+      override_properties = {
+        "dataproc:dataproc.allow.zero.workers" = "true"
+      }
+    }
+
   }
 }
