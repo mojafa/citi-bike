@@ -21,7 +21,7 @@ from prefect.deployments import Deployment
 #Arguments for flow - Symbols dictionary, Alpha Vantage key, From date and To date to set period
 #Returns stock dataframe
 @task(name="pull_time_series_stock_data", log_prints=True)
-def pull_time_series_stock_data(symbols_dict, alpha_vantage_key, from_date, to_date):
+def pull_time_series_stock_data(symbols_dict, finnhub_key, from_date, to_date):
     #Dictionary to store raw data
     stock_data = {}
     #5 calls can be made to aplha vantage per minute. So after every 5 calls we will pause for 1 min with 2 secs buffer
@@ -33,7 +33,7 @@ def pull_time_series_stock_data(symbols_dict, alpha_vantage_key, from_date, to_d
         try:
             if counter%6 != 0:
                 #Update URL
-                url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=' + symbol + '&apikey=' + alpha_vantage_key + '&outputsize=full'
+                url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=' + symbol + '&apikey=' + finnhub_key + '&outputsize=full'
                 response = requests.get(url)
                 stock_data[symbol] = response.json()['Time Series (Daily)']
                 counter += 1
@@ -73,7 +73,7 @@ def pull_time_series_stock_data(symbols_dict, alpha_vantage_key, from_date, to_d
 #Arguments for flow - Symbols dictionary, Alpha Vantage key, From date and To date to set period
 #Returns stock sentiment dataframe
 @task(name="pull_time_series_stock_sentiment_data", log_prints=True)
-def pull_time_series_stock_sentiment_data(symbols_dict, alpha_vantage_key, from_date, to_date):
+def pull_time_series_stock_sentiment_data(symbols_dict, finnhub_key, from_date, to_date):
     #Iterate through each week to create a list of mondays - Alpha vantage API sentiment data has a limit of 200 responses at a time. So we will only pull 5 days data at a time. From each monday to friday.
     temp_day = datetime.datetime.strptime(from_date, "%Y-%m-%d").date()
     mondays = [temp_day]
@@ -98,7 +98,7 @@ def pull_time_series_stock_sentiment_data(symbols_dict, alpha_vantage_key, from_
                     from_day = str(monday).replace('-','') + 'T0000'
                     to_day = str(monday + datetime.timedelta(days=5)).replace('-','') + 'T0000'
                     #Update URL
-                    url = 'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=' + symbol + '&apikey=' + alpha_vantage_key + '&topics=technology&time_from=' + from_day + '&time_to=' + to_day + '&limit=200'
+                    url = 'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=' + symbol + '&apikey=' + finnhub_key + '&topics=technology&time_from=' + from_day + '&time_to=' + to_day + '&limit=200'
                     stock_sentiment_data[symbol + '_' + str(monday)] = requests.get(url).json()
                     counter += 1
                 else:
@@ -179,17 +179,17 @@ def submit_spark_job(spark_cluster_name, spark_job_region, gcs_bucket_name, bq_d
 
 
 @flow(name="main_flow", log_prints=True, task_runner=SequentialTaskRunner())
-def main_flow(gcp_key_path, alpha_vantage_key, from_date, to_date, gcs_bucket_name, bq_dataset_name, bq_table_name, spark_cluster_name, spark_job_region, spark_job_file):
+def main_flow(gcp_key_path, finnhub_key, from_date, to_date, gcs_bucket_name, bq_dataset_name, bq_table_name, spark_cluster_name, spark_job_region, spark_job_file):
     #Set a timer to track time to complete
     start = time.time()
     #Dictionary of top 5 technology stocks with their symbol/ticker and names. These have been identified by market cap and their sentiment data available via Alphavantage API. Market cap & tickets at -> https://www.nasdaq.com/market-activity/stocks/screener
     symbols_dict = {'AAPL' : 'Apple', 'MSFT' : 'Microsoft', 'GOOG' : 'Google', 'META' : 'Meta', 'ASML': 'ASML Holding N.V. New York'}
     #Part 1 - Fetch data - Call function
-    pull_time_series_stock_data(symbols_dict, alpha_vantage_key, from_date, to_date)
+    pull_time_series_stock_data(symbols_dict, finnhub_key, from_date, to_date)
     #Pause between data fetches to avoid limit breach
     print('Pausing 60s between data stock & sentiment data fetch.')
     time.sleep(60)
-    pull_time_series_stock_sentiment_data(symbols_dict, alpha_vantage_key, from_date, to_date)
+    pull_time_series_stock_sentiment_data(symbols_dict, finnhub_key, from_date, to_date)
     #Part 2 - Upload data & pyspark script to GCS - Call function
     upload_to_gcs(gcp_key_path, gcs_bucket_name, from_date, to_date)
     #Part 3 - Run Spark job - Call function
@@ -209,9 +209,9 @@ deployment = Deployment.build_from_flow(
     name="Data Pipeline Main Flow - DE ZC 2023",
     parameters=
                 {"gcp_key_path" : "/app/codes/gcp_key.json",
-                "alpha_vantage_key" : "alpha_vantage_key",
+                "finnhub_key" : "finnhub_key",
                 "from_date" : "2023-03-27",
-                "to_date": "2023-04-03" ,
+                "to_date": "2023-04-03",
                 "gcs_bucket_name": "your_gcs_bucket_name",
                 "bq_dataset_name" : "your_bq_dataset_name",
                 "bq_table_name" : "your_bq_table_name",
@@ -223,4 +223,3 @@ deployment = Deployment.build_from_flow(
 #Call deployment when the script is run
 if __name__ == "__main__":
     deployment.apply()
-
