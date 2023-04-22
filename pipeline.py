@@ -38,20 +38,19 @@ response = requests.get(f'https://finnhub.io/api/v1/forex/candle?symbol=^DJI&res
 
 data = json.loads(response.text)
 
-# Store data in temporary location, such as Prefect's storage
+# Set up a scheduled task to trigger the pipeline, e.g. using a cron job or Cloud Scheduler.
+# Use the Finnhub API to pull historical data for XAU/USD and US30 within the specified timeframe, e.g. using the /forex/candle and /index/candle endpoints.
+# Store the data in a temporary location, such as a Cloud Storage bucket.
+# Use a sentiment analysis tool or news API to pull relevant news or sentiment data for the same timeframe. Store the data in a temporary location, such as another Cloud Storage bucket.
+# Use Apache Beam or another ETL tool to join the data from Finnhub and the sentiment data using a common time range, e.g. by grouping data by timestamp or using a sliding window. You can use Python's Pandas library to join the data using a common time range as well.
+# Cleanse and transform the data as needed to prepare it for loading into BigQuery. This may include renaming columns, casting data types, and dropping or filling missing values.
+# Use Cloud Dataproc to run Spark jobs to further analyze or transform the data, e.g. using Spark SQL or MLlib.
+# Load the transformed data into a BigQuery table.
+# Create dashboards using a data visualization tool such as Google Data Studio, connecting to the BigQuery table.
 
-
-#Part 1 - Fetch data
-# A - Pull time series daily adjusted stock data using Alpha Vantage API
-# B - Pull time series sentiments data in batches - 5 Days at a time using Alpa Vantage API
-# Alpha Vantage API limits - 5 calls per minute & 500 calls per day. Sentiment data is limited to max 200 articles per call so data is pulled in batches
-
-
-# A - Pull time series daily adjusted stock data using Alpha Vantage API
-#Arguments for flow - Symbols dictionary, Alpha Vantage key, From date and To date to set period
-#Returns stock dataframe
 @task(name="pull_stock_data", log_prints=True)
-def pull_stock_data(symbols, finnhub_key, from_date, to_date):
+def pull_financial_data
+def pull_financial_data(symbols, finnhub_key, from_date, to_date):
     #Dictionary to store raw data
     stock_data = {}
     #5 calls can be made to aplha vantage per minute. So after every 5 calls we will pause for 1 min with 2 secs buffer
