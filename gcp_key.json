@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "de-finnhub",
+  "private_key_id": "e5af6e22b6123c0402e34a364978d4a3e7204b71",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCkyDAQCnZpS35R\nML2HfJKbNnZzQghcWkU065LaoGZWk2IMqantzpjo4+2svV3CUy5oDYQarse4D7gQ\nl3ULt8jJgf8F8HBL4DR54lDGR10PSnfi0qMREo88AXAE6sMNCIaR0VjKNp71Txui\nIE2MbbGI9bMc4zD0rquppTe1JW+p7QjNLPFO2IazeuSASjh8upcorQpBkHaWLhhB\nJfbEetnzLS8BAE7V4G3PnxLI/jsjanoCo4ypOhJ3G2Q8EKH+36dyuuhkF+t5Oc4O\nbpJEu+hyUlZHM7idjyFBvhKwTVpVb3APgIfjqn4iKMjvqJmdaWn5AtXRufXbVwoE\n952OiBnNAgMBAAECggEAHUwKX4+8pdPqTX0g9WnMlxQD01I2MlVKYLJRldVW3KWv\nlRjFQaatwRplM4Unmlk3swBUMHpKwArraufCw6aVaF5YfTHWhWcDbXgzbE1b2lAf\nKJDStUJbfQu0YutqanLNmjdiVfGIKY07GIQtxX3rRrKIeeZa2eYEV1EsqmRRiiB1\njwPAQmv6t3nYJ3VWpP6RuQIJNsOwcy4hxzuHAnoOEoDFxq0uP5XhIkxj/ho7lTpN\nzTDUrvr6QFXyCW2xgOKPkPO56gdUBlzCz3wCqABvMR2Da1CB8nO6n204zcA58+7G\nBrpNzUCuXyjOnVtoD1jlPNWRhRSvCXvCTFUEwwsggQKBgQDVAoZNVbLGetHtpIjh\nXANrPmjjqLaPpjYuTg9jyFfQ2vlAn04F9CKCtEbMKfljPmq0qmSnv7GMAb4hbugL\nkYMZqE5B4nyV0Eu/2CrdhoXO1FVQLt3XLj4/8IqCkia00ggQWfbFW9tt4GbtKT4a\naFN98/0Y+Qhqk/6lJapuY0daSQKBgQDGCeWq9L+E6brP/Godg45VqxWcx9kg4FtJ\niPxsiVb2MAtS176n3YVOf1IpY7zUvh0lDyhxcIcBEZ0v1Slm6hCGrthUplBqAudZ\nyPcdJX4X01Ez84O6LKolATt3nw0UVDH8i5x3k7TLiWYon8qby964IZw6SJtOrjGO\nFj4h5b2jZQKBgCelbqXaO4ohtg0LQMbhP2molhE5h7E4+ICp2sdxtJaVCytx+y20\ngO/e6gZ6EYbdSTMTO+TVExDCCkdiwyHUFZii8N3mb9XajR7J90CAF0ulzbM85eF1\nI/T2qnEfDsE9Dm8sr3eQX0kWKVIfCQYVQOUCkqshPuXHYfAPEKe3JsKxAoGAUEO+\npBVicjpRDu8dCy1AyRP4RHzzUdHc7ebpeAwKBOngDQmIKn0sBG6yHDhiVk9ffJ+y\nIpga/6Hl9XcNurpvTEcdQuHNgcn/fnJnRZbmjj2FkerGnvRvWWQweAEsyep9//+N\nwSFKi5v6nch108NDV5m3uh+nYrJTP2VgdViqDckCgYEA0+JIfvs9gYmpdGXljQ2O\nk69c3OvnEBAb3iJ++z8LCOOONdS9vxpEvXkWvTKuUXjnOdKYLJp73Uk4BAf0PWjc\nSndRVIgR7lRGBCVvgN+TO+7yv57L6wq/spETs4EPUVEHh27t2Vi6UZnu5XotOA7E\nDwzl+KEaV1ZHwPmljAze7Yw=\n-----END PRIVATE KEY-----\n",
+  "client_email": "terraform-iam@de-finnhub.iam.gserviceaccount.com",
+  "client_id": "105814427391962817192",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/terraform-iam%40de-finnhub.iam.gserviceaccount.com"
+}
