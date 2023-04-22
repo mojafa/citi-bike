@@ -20,8 +20,8 @@ from prefect.deployments import Deployment
 # A - Pull time series daily adjusted stock data using Alpha Vantage API
 #Arguments for flow - Symbols dictionary, Alpha Vantage key, From date and To date to set period
 #Returns stock dataframe
-@task(name="pull_time_series_stock_data", log_prints=True)
-def pull_time_series_stock_data(symbols_dict, finnhub_key, from_date, to_date):
+@task(name="pull_stock_data", log_prints=True)
+def pull_stock_data(symbols_dict, finnhub_key, from_date, to_date):
     #Dictionary to store raw data
     stock_data = {}
     #5 calls can be made to aplha vantage per minute. So after every 5 calls we will pause for 1 min with 2 secs buffer
@@ -185,7 +185,7 @@ def main_flow(gcp_key_path, finnhub_key, from_date, to_date, gcs_bucket_name, bq
     #Dictionary of top 5 technology stocks with their symbol/ticker and names. These have been identified by market cap and their sentiment data available via Alphavantage API. Market cap & tickets at -> https://www.nasdaq.com/market-activity/stocks/screener
     symbols_dict = {'AAPL' : 'Apple', 'MSFT' : 'Microsoft', 'GOOG' : 'Google', 'META' : 'Meta', 'ASML': 'ASML Holding N.V. New York'}
     #Part 1 - Fetch data - Call function
-    pull_time_series_stock_data(symbols_dict, finnhub_key, from_date, to_date)
+    pull_stock_data(symbols_dict, finnhub_key, from_date, to_date)
     #Pause between data fetches to avoid limit breach
     print('Pausing 60s between data stock & sentiment data fetch.')
     time.sleep(60)
