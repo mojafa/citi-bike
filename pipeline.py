@@ -21,14 +21,14 @@ from prefect.deployments import Deployment
 #Arguments for flow - Symbols dictionary, Alpha Vantage key, From date and To date to set period
 #Returns stock dataframe
 @task(name="pull_stock_data", log_prints=True)
-def pull_stock_data(symbols_dict, finnhub_key, from_date, to_date):
+def pull_stock_data(symbols, finnhub_key, from_date, to_date):
     #Dictionary to store raw data
     stock_data = {}
     #5 calls can be made to aplha vantage per minute. So after every 5 calls we will pause for 1 min with 2 secs buffer
     #Counter to track calls
     counter = 1
     #Iterate through each symbol
-    for symbol in symbols_dict.keys():
+    for symbol in symbols.keys():
         #Use try to avoid unanticipated API errors
         try:
             if counter%6 != 0:
@@ -37,6 +37,13 @@ def pull_stock_data(symbols_dict, finnhub_key, from_date, to_date):
                 response = requests.get(url)
                 stock_data[symbol] = response.json()['Time Series (Daily)']
                 counter += 1
+
+                    US30
+                # https://finnhub.io/api/v1/index/constituents?symbol=^DJI&token=YOUR_API_KEY
+                    XAUUSD
+                # https://finnhub.io/api/v1/forex/rates?base=XAU&token=YOUR_API_KEY
+
+
             else:
                 #Pause after 5 calls
                 print('Reached max 5 API calls per minute. Pausing for 60s...')
@@ -61,7 +68,7 @@ def pull_stock_data(symbols_dict, finnhub_key, from_date, to_date):
             df_value.append(stock_data[stock][day]['5. adjusted close'])
 
     #Create dataframe
-    stock_df = pd.DataFrame({'Stock_Name' : [symbols_dict[i] for i in df_stock], 'Stock': df_stock, 'Day': df_day, 'Value': df_value})
+    stock_df = pd.DataFrame({'Stock_Name' : [symbols[i] for i in df_stock], 'Stock': df_stock, 'Day': df_day, 'Value': df_value})
     #Apply filters to only capture data as per from and to dates that were passed
     stock_df = stock_df[(stock_df['Day'] >= from_date) & (stock_df['Day'] < to_date)]
     #Save data locally for reference
@@ -73,7 +80,7 @@ def pull_stock_data(symbols_dict, finnhub_key, from_date, to_date):
 #Arguments for flow - Symbols dictionary, Alpha Vantage key, From date and To date to set period
 #Returns stock sentiment dataframe
 @task(name="pull_time_series_stock_sentiment_data", log_prints=True)
-def pull_time_series_stock_sentiment_data(symbols_dict, finnhub_key, from_date, to_date):
+def pull_time_series_stock_sentiment_data(symbols, finnhub_key, from_date, to_date):
     #Iterate through each week to create a list of mondays - Alpha vantage API sentiment data has a limit of 200 responses at a time. So we will only pull 5 days data at a time. From each monday to friday.
     temp_day = datetime.datetime.strptime(from_date, "%Y-%m-%d").date()
     mondays = [temp_day]
@@ -89,7 +96,7 @@ def pull_time_series_stock_sentiment_data(symbols_dict, finnhub_key, from_date, 
     #Counter to track calls
     counter = 1
     #Iterate through each symbol
-    for symbol in symbols_dict.keys():
+    for symbol in symbols.keys():
         #Iterate trhough each monday
         for monday in mondays:
             #Use try to avoid unanticipated API errors
@@ -133,7 +140,7 @@ def pull_time_series_stock_sentiment_data(symbols_dict, finnhub_key, from_date, 
 
 
     #Create dataframe
-    stock_sentiment_df = pd.DataFrame({'Stock_Name' : [symbols_dict[i] for i in df_stock], 'Stock': df_stock, 'Time' : df_time, 'Day': df_day, 'URL' : df_url, 'Title': df_title, 'Sentiment' : df_sentiment, 'Record_Count' : [1]*len(df_sentiment) })
+    stock_sentiment_df = pd.DataFrame({'Stock_Name' : [symbols[i] for i in df_stock], 'Stock': df_stock, 'Time' : df_time, 'Day': df_day, 'URL' : df_url, 'Title': df_title, 'Sentiment' : df_sentiment, 'Record_Count' : [1]*len(df_sentiment) })
     #Save data locally for reference
     stock_sentiment_df.to_csv(os.path.join(os.getcwd(),'stocks_sentiment_df_' + from_date + '_' + to_date + '.csv'),index=False)
     #Return dataframe
@@ -183,13 +190,13 @@ def main_flow(gcp_key_path, finnhub_key, from_date, to_date, gcs_bucket_name, bq
     #Set a timer to track time to complete
     start = time.time()
     #Dictionary of top 5 technology stocks with their symbol/ticker and names. These have been identified by market cap and their sentiment data available via Alphavantage API. Market cap & tickets at -> https://www.nasdaq.com/market-activity/stocks/screener
-    symbols_dict = {'AAPL' : 'Apple', 'MSFT' : 'Microsoft', 'GOOG' : 'Google', 'META' : 'Meta', 'ASML': 'ASML Holding N.V. New York'}
+    symbols = {'XAUUSD' : 'Gold', 'DJI' : 'US30'}
     #Part 1 - Fetch data - Call function
-    pull_stock_data(symbols_dict, finnhub_key, from_date, to_date)
+    pull_stock_data(symbols, finnhub_key, from_date, to_date)
     #Pause between data fetches to avoid limit breach
     print('Pausing 60s between data stock & sentiment data fetch.')
     time.sleep(60)
-    pull_time_series_stock_sentiment_data(symbols_dict, finnhub_key, from_date, to_date)
+    pull_time_series_stock_sentiment_data(symbols, finnhub_key, from_date, to_date)
     #Part 2 - Upload data & pyspark script to GCS - Call function
     upload_to_gcs(gcp_key_path, gcs_bucket_name, from_date, to_date)
     #Part 3 - Run Spark job - Call function
