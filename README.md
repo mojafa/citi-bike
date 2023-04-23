@@ -24,3 +24,5 @@ As a data engineering problem, the project involves the following tasks:
 
 
 As you work on each step of the project, you will encounter various data engineering challenges such as data ingestion, data processing, data storage, data modeling, data transformation, data visualization, and pipeline orchestration. The project will allow you to apply your data engineering skills and knowledge to solve real-world data engineering problems.
+
+pip install finnhub-python pandas google-cloud-storage prefect
