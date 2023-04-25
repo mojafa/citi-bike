@@ -26,3 +26,15 @@ As a data engineering problem, the project involves the following tasks:
 As you work on each step of the project, you will encounter various data engineering challenges such as data ingestion, data processing, data storage, data modeling, data transformation, data visualization, and pipeline orchestration. The project will allow you to apply your data engineering skills and knowledge to solve real-world data engineering problems.
 
 pip install finnhub-python pandas google-cloud-storage prefect
+
+
+ {"gcp_key_path" : "/app/codes/gcp_key.json",
+                "alpha_vantage_key" : "MZEBJG8H3L5VEMBY",
+                "from_date" : "2023-03-01",
+                "to_date": "2023-04-01" ,
+                "gcs_bucket_name": "finnhub-gcs",
+                "bq_dataset_name" : "finnhub_bq",
+                "bq_table_name" : "finnhub_bq_table",
+                "spark_cluster_name" : "finnhub-spark-cluster",
+                "spark_job_region" : "northamerica-northeast1",
+                "spark_job_file" :"spark_job.py"}
