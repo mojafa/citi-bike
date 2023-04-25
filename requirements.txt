@@ -3,12 +3,3 @@ requests
 prefect
 prefect_gcp
 prefect_gcp[cloud_storage]
-prefect-sqlalchemy
-prefect-dbt
-protobuf
-pyarrow
-pandas-gbq
-psycopg2-binary
-sqlalchemy
-gcsfs
-jupyter
