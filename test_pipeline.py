@@ -36,31 +36,13 @@ def fetch_data():
     df.rename(columns={'4. close': 'close'}, inplace=True)
     df['symbol'] = 'XAUUSD'
 
-    # # repeat above steps for US30
-    # params = {
-    #     'function': 'TIME_SERIES_DAILY',
-    #     'symbol': 'DJI',
-    #     'apikey': api_key
-    # }
-    # response = requests.get(base_url, params=params)
-    # data = json.loads(response.text)
-    # df_us30 = pd.DataFrame.from_dict(data['Time Series (Daily)'], orient='index')
-    # df_us30.index.name = 'date'
-    # df_us30.reset_index(inplace=True)
-    # df_us30.rename(columns={'4. close': 'close'}, inplace=True)
-    # df_us30['symbol'] = 'US30'
-
     # save dataframes to parquet
     df.to_parquet('data/gold.parquet')
-    # df_us30.to_parquet('data/us30.parquet')
-
-    # return df, df_us30
     return df
 
 @task(log_prints=True)
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     """Cleaning gold dataframe"""
-
 
     # convert date column to datetime
     df['date'] = pd.to_datetime(df['date'])
@@ -76,11 +58,8 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 @task
 def write_local(df: pd.DataFrame, dataset_file: str) -> Path:
     """Write cleaned data to local parquet file"""
-    Path(f"data/fhv").mkdir(parents=True, exist_ok=True)
-
+    Path(f"data").mkdir(parents=True, exist_ok=True)
     df.to_parquet('data/gold.parquet')
-
-
     return df
 
 
