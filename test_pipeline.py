@@ -6,9 +6,11 @@ from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
 
 from datetime import datetime
+from pathlib import Path
 
 
-@task
+
+@task(log_prints=True)
 def fetch_data():
     """Fetch gold data from api into pandas DataFrame"""
     # insert code from above to fetch data and save to parquet file
@@ -34,30 +36,73 @@ def fetch_data():
     df.rename(columns={'4. close': 'close'}, inplace=True)
     df['symbol'] = 'XAUUSD'
 
-    # repeat above steps for US30
-    params = {
-        'function': 'TIME_SERIES_DAILY',
-        'symbol': 'DJI',
-        'apikey': api_key
-    }
-    response = requests.get(base_url, params=params)
-    data = json.loads(response.text)
-    df_us30 = pd.DataFrame.from_dict(data['Time Series (Daily)'], orient='index')
-    df_us30.index.name = 'date'
-    df_us30.reset_index(inplace=True)
-    df_us30.rename(columns={'4. close': 'close'}, inplace=True)
-    df_us30['symbol'] = 'US30'
+    # # repeat above steps for US30
+    # params = {
+    #     'function': 'TIME_SERIES_DAILY',
+    #     'symbol': 'DJI',
+    #     'apikey': api_key
+    # }
+    # response = requests.get(base_url, params=params)
+    # data = json.loads(response.text)
+    # df_us30 = pd.DataFrame.from_dict(data['Time Series (Daily)'], orient='index')
+    # df_us30.index.name = 'date'
+    # df_us30.reset_index(inplace=True)
+    # df_us30.rename(columns={'4. close': 'close'}, inplace=True)
+    # df_us30['symbol'] = 'US30'
 
-    # concatenate dataframes
-    df_all = pd.concat([df, df_us30])
+    # save dataframes to parquet
+    df.to_parquet('data/gold.parquet')
+    # df_us30.to_parquet('data/us30.parquet')
 
-    # save data to parquet file and upload to GCS
-    df_all.to_parquet('<path_to_parquet_file>')
+    # return df, df_us30
+    return df
 
+@task(log_prints=True)
+def clean_data(df: pd.DataFrame) -> pd.DataFrame:
+    """Cleaning gold dataframe"""
+
+
+    # convert date column to datetime
+    df['date'] = pd.to_datetime(df['date'])
+
+    # convert close column to float
+    df['close'] = df['close'].astype(float)
+
+    print(df.head(2))
+    print(f"columns: {df.dtypes}")
+    print(f"rows: {len(df)}")
+    return df
 
 @task
+def write_local(df: pd.DataFrame, dataset_file: str) -> Path:
+    """Write cleaned data to local parquet file"""
+    Path(f"data/fhv").mkdir(parents=True, exist_ok=True)
+
+    df.to_parquet('data/gold.parquet')
+
+
+    return df
+
+
+@task(log_prints=True)
 def upload_to_gcs(filename):
     """Upload local parquet file to GCS"""
     gcs_block = GcsBucket.load("finnhub-gcs")
-    gcs_block.upload_from_path(from_path=path, to_path=path)
+    gcs_block.upload_from_path(from_path='data/gold_us30.parquet', to_path='data/gold_us30.parquet')
     return
+
+
+@flow()
+def web_to_gcs() -> None:
+    year = 2019
+    for month in range(1, 13):
+        dataset_file = f"fhv_tripdata_{year}-{month:02}"
+        dataset_url = f"https://github.com/DataTalksClub/nyc-tlc-data/releases/download/fhv/{dataset_file}.csv.gz"
+        df = fetch(dataset_url)
+        df_clean = clean(df)
+        path = write_local(df_clean, dataset_file)
+        write_gcs(path)
+
+
+if __name__ == "__main__":
+    web_to_gcs()
