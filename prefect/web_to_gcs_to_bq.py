@@ -11,7 +11,7 @@ from prefect_gcp.cloud_storage import GcsBucket
 # from prefect_dbt.cli import DbtCoreOperation, DbtCliProfile
 
 
-@task(log_prints=True, name="Fetch divvy data", retries=3)
+@task(log_prints=True, name="Fetch citi bike data", retries=3)
 def download_file(url):
     print(f"Downloading data from {url}...")
     response = requests.get(url)
@@ -34,11 +34,19 @@ def read_csv(data):
         df = max(df_list, key=len)
         return df
 
+# @task(log_prints=True, name="Writing to GCS bucket")
+# def write_gcs(df, filename, bucket_name):
+#     """Upload a pandas DataFrame as a parquet file to GCS"""
+#     gcs_bucket = GcsBucket.load("citibike")
+#     gcs_bucket.upload_from_dataframe(df=df, to_path=filename, serialization_format='parquet_snappy',timeout=1000)
+
 @task(log_prints=True, name="Writing to GCS bucket")
 def write_gcs(df, filename, bucket_name):
-    """Upload a pandas DataFrame as a parquet file to GCS"""
+    """Upload a pandas DataFrame as a CSV file to GCS"""
     gcs_bucket = GcsBucket.load("citibike")
-    gcs_bucket.upload_from_dataframe(df=df, to_path=filename, serialization_format='parquet_snappy',timeout=1000)
+    csv_bytes = df.to_csv(index=False).encode('utf-8')
+    gcs_bucket.upload_file(filename, data=csv_bytes, content_type='text/csv')
+
 
 @task(log_prints=True, name="Extracting from GCS bucket")
 def extract_from_gcs() -> pd.DataFrame:
