@@ -1,5 +1,0 @@
-pandas
-requests
-prefect
-prefect_gcp
-prefect_gcp[cloud_storage]
