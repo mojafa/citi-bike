@@ -94,7 +94,7 @@ def web_to_gcs_to_bq():
 
     urls = [
         f"https://s3.amazonaws.com/tripdata/{yearmonth}-citibike-tripdata.csv.zip"
-        for year in range(2019, 2023)
+        for year in range(2021, 2022)
         for yearmonth in [f"{year}{month:02d}" for month in range(4, 13)] + [f"{year+1}{month:02d}" for month in range(1, 3)]
     ]
 
@@ -107,8 +107,6 @@ def web_to_gcs_to_bq():
     df = extract_from_gcs()
     df = transform(df)
     write_bq(df)
-
-
 
 if __name__ == "__main__":
     web_to_gcs_to_bq()
