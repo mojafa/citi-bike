@@ -108,5 +108,7 @@ def web_to_gcs_to_bq():
     df = transform(df)
     write_bq(df)
 
+
+
 if __name__ == "__main__":
     web_to_gcs_to_bq()
