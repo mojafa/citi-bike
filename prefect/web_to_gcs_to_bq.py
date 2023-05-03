@@ -8,7 +8,6 @@ from pathlib import Path
 from prefect import flow, task
 from prefect_gcp import GcpCredentials
 from prefect_gcp.cloud_storage import GcsBucket
-# from prefect_dbt.cli import DbtCoreOperation, DbtCliProfile
 
 
 @task(log_prints=True, name="Fetch citi bike data", retries=3)
@@ -40,8 +39,6 @@ def write_gcs(df, filename, bucket_name):
     gcs_bucket = GcsBucket.load("citibike")
     gcs_bucket.upload_from_dataframe(df=df, to_path=filename, serialization_format='parquet_snappy',timeout=1000)
 
-
-
 @task(log_prints=True, name="Extracting from GCS bucket")
 def extract_from_gcs() -> pd.DataFrame:
     """Download and concatenate trip data from GCS"""
@@ -54,7 +51,6 @@ def extract_from_gcs() -> pd.DataFrame:
             df = pd.read_parquet(f"gcs://{blob.bucket.name}/{blob.name}")
             df_list.append(df)
     return pd.concat(df_list)
-
 
 @task(log_prints=True, name="Transformaing Data")
 def transform(df: pd.DataFrame) -> pd.DataFrame:
@@ -103,7 +99,7 @@ def web_to_gcs_to_bq():
     for url in urls:
         data = download_file(url)
         df = read_csv(data)
-        filename = f"citibike-tripdata/{url.split('/')[-1].replace('.csv.zip', '.parquet')}"
+        filename = f"{url.split('/')[-1].replace('.zip', '.parquet')}"
         write_gcs(df, filename, bucket_name)
 
     df = extract_from_gcs()
