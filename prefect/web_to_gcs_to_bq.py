@@ -9,7 +9,6 @@ from prefect import flow, task
 from prefect_gcp import GcpCredentials
 from prefect_gcp.cloud_storage import GcsBucket
 
-
 @task(log_prints=True, name="Fetch citi bike data", retries=3)
 def download_file(url):
     print(f"Downloading data from {url}...")
