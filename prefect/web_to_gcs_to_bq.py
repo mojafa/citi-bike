@@ -28,6 +28,9 @@ def read_csv(data):
         for csv_file in csv_files:
             with zip_ref.open(csv_file) as f:
                 df = pd.read_csv(f, encoding='latin-1')
+                print(df.head(2))
+                print(f"columns: {df.dtypes}")
+                print(f"rows: {len(df)}")
                 df_list.append(df)
         df = max(df_list, key=len)
         return df
@@ -60,7 +63,7 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
         "started_at": "datetime64[ns]",
         "ended_at": "datetime64[ns]",
         "start_station_name": "str",
-        "start_station_id": "str",
+        "start_station_id": "double",
         "end_station_name": "str",
         "end_station_id": "str",
         "start_lat": "float64",
