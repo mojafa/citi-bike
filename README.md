@@ -1,7 +1,7 @@
 ![](citibike.png)
 
 # Citi  Bike NYC Data Engineering Project 🚴‍♀️
-This is an end to end data engineering project, This project uses [CItiBike's NYC bikeshare dataset](https://s3.amazonaws.com/tripdata/index.html), Citi Bike is the nation's largest bikeshare program, with 25,000 bikes and over 1,500 stations across Manhattan, Brooklyn, Queens, the Bronx, Jersey City, and Hoboken.
+This is an end to end data engineering project, This project uses [Citi Bike's NYC bikeshare dataset](https://s3.amazonaws.com/tripdata/index.html), Citi Bike is the nation's largest bikeshare program, with 25,000 bikes and over 1,500 stations across Manhattan, Brooklyn, Queens, the Bronx, Jersey City, and Hoboken.
 ## Problem Description
 The purpose of this project is to make an end to end data pipeline which extracts the Citi bike data from the web https://s3.amazonaws.com/tripdata/index.html and Load this data in Google Cloud storage and Big Query , apply Kimbal Dimensional Modeling(Facts and Dimensions tables) to the data using dbt and build a Looker dashboard to vizualize:
 - Daily riders activity
