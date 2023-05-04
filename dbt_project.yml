@@ -3,13 +3,12 @@
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
 
-name: 'citibike_project'
+name: 'citibike'
 version: '1.0.0'
 config-version: 2
 
 # This setting configures which "profile" dbt uses for this project.
-profile: 'citibike-dbt-cli-profile'
-
+profile: 'default'
 # These configurations specify where dbt should look for different types of files.
 # The `model-paths` config, for example, states that models in this project can be
 # found in the "models/" directory. You probably won't need to change these!
@@ -24,6 +23,7 @@ target-path: "target"  # directory which will store compiled SQL files
 clean-targets:         # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
+  - "dbt_modules"
 
 
 # Configuring models
@@ -33,10 +33,14 @@ clean-targets:         # directories to be removed by `dbt clean`
 # directory as views. These settings can be overridden in the individual model
 # files using the `{{ config(...) }}` macro.
 models:
-  citibike_project:
+  citibike:
+    staging:
+        materialized: view
+    core:
+        materialized: table
 
 seeds:
-    citibike_project:
+    citibike:
         citibike_stations_lookup:
             +column_types:
                 station_id: INTEGER

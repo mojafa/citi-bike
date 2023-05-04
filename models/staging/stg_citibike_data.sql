@@ -1,6 +1,6 @@
 {{
     config(
-        materialized='table',
+        materialized="table",
         unique_key="ride_id",
         partition_by={
             "field": "started_at",
@@ -11,40 +11,35 @@
     )
 }}
 
-with citibike_data as (
-    select *
-    from {{ source('staging','citibike_default_data')}}
-    where ride_id is not null
-)
+with
+    citibike_data as (
+        select * from {{ source("staging", "rides") }} where ride_id is not null
+    )
 
-SELECT
+select
     -- ride info
-    {{ dbt_utils.surrogate_key(['ride_id', 'started_at']) }} as r_id,
-    CAST(ride_id AS STRING) AS ride_id,
-    CAST(rideable_type AS STRING) AS rideable_type,
-    CAST(member_casual AS STRING) AS membership_status,
+    {{ dbt_utils.surrogate_key(["ride_id", "started_at"]) }} as r_id,
+    cast(ride_id as string) as ride_id,
+    cast(rideable_type as string) as rideable_type,
+    cast(member_casual as string) as membership_status,
 
     -- Timestamp
-    CAST(started_at AS TIMESTAMP) AS started_at,
-    CAST(ended_at AS TIMESTAMP) AS ended_at,
+    cast(started_at as timestamp) as started_at,
+    cast(ended_at as timestamp) as ended_at,
 
     -- station info
-    CAST(start_station_name AS STRING) AS start_station_name,
-    CAST(start_station_id AS STRING) AS start_station_id,
-    CAST(end_station_name AS STRING) AS end_station_name,
-    CAST(end_station_id AS STRING) AS end_station_id,
+    cast(start_station_name as string) as start_station_name,
+    cast(start_station_id as string) as start_station_id,
+    cast(end_station_name as string) as end_station_name,
+    cast(end_station_id as string) as end_station_id,
 
     -- Station info: geo-spatial convert to geospatial in google-studio
-    CAST(start_lat AS NUMERIC) AS start_lat,
-    CAST(start_lng AS NUMERIC) AS start_lng,
-    CAST(end_lat AS NUMERIC) AS end_lat,
-    CAST(end_lng AS NUMERIC) AS end_lng
+    cast(start_lat as numeric) as start_lat,
+    cast(start_lng as numeric) as start_lng,
+    cast(end_lat as numeric) as end_lat,
+    cast(end_lng as numeric) as end_lng
 
-FROM citibike_data
+from citibike_data
 
 -- dbt build --select stg_citibike_data.sql --var 'is_test_run: false'
-{% if var('is_test_run', default=true) %}
-
-  limit 100
-
-{% endif %}
+{% if var("is_test_run", default=true) %} limit 100 {% endif %}
