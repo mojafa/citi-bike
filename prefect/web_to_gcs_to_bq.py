@@ -33,13 +33,16 @@ def read_csv(data):
                 print(f"rows: {len(df)}")
                 df_list.append(df)
         df = max(df_list, key=len)
+        df['start_station_id'] = pd.to_numeric(df['start_station_id'], errors='coerce').fillna(0)
+        df['end_station_id'] = pd.to_numeric(df['end_station_id'], errors='coerce').fillna(0)
+
         return df
 
 @task(log_prints=True, name="Writing to GCS bucket")
 def write_gcs(df, filename, bucket_name):
     """Upload a pandas DataFrame as a parquet file to GCS"""
     gcs_bucket = GcsBucket.load("citibike")
-    gcs_bucket.upload_from_dataframe(df=df, to_path=filename, serialization_format='parquet_snappy',timeout=1000)
+    gcs_bucket.upload_from_dataframe(df=df, to_path=filename, serialization_format='parquet',timeout=1000)
 
 @task(log_prints=True, name="Extracting from GCS bucket")
 def extract_from_gcs() -> pd.DataFrame:
@@ -49,8 +52,8 @@ def extract_from_gcs() -> pd.DataFrame:
     blobs=gcs_block.list_blobs("citi_bike_datalake_citi-bike-385512/")
     df_list = []
     for blob in blobs:
-        if blob.name.endswith(".parquet.snappy"):
-            df = pd.read_parquet(f"gcs://{blob.bucket.name}/{blob.name}")
+        if blob.name.endswith(".parquet"):
+            df = pd.read_parquet(f"gs://{blob.bucket.name}/{blob.name}")
             df_list.append(df)
     return pd.concat(df_list)
 
@@ -63,7 +66,7 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
         "started_at": "datetime64[ns]",
         "ended_at": "datetime64[ns]",
         "start_station_name": "str",
-        "start_station_id": "double",
+        "start_station_id": "str",
         "end_station_name": "str",
         "end_station_id": "str",
         "start_lat": "float64",
@@ -95,7 +98,7 @@ def web_to_gcs_to_bq():
     urls = [
         f"https://s3.amazonaws.com/tripdata/{yearmonth}-citibike-tripdata.csv.zip"
         for year in range(2021, 2022)
-        for yearmonth in [f"{year}{month:02d}" for month in range(4, 13)] + [f"{year+1}{month:02d}" for month in range(1, 3)]
+        for yearmonth in [f"{year}{month:02d}" for month in range(4, 5)] + [f"{year+1}{month:02d}" for month in range(1, 3)]
     ]
 
     for url in urls:
