@@ -21,11 +21,11 @@ variable "storage_class" {
 variable "BQ_DATASET" {
   description = "BigQuery Dataset that raw data (from GCS) will be written to"
   type = string
-  default = "citi_bike_rawdata"
+  default = "citibike_dw"
 }
 
 variable "DBT_DATASET" {
   description = "BigQuery Dataset that transformed data (from dbt) will be written to and connected to the presentation layer"
   type = string
-  default = "citi_bike_data_dbt"
+  default = "citibike_dbt_dw"
 }
