@@ -13,7 +13,7 @@
 
 with citibike_data as (
     select *
-    from {{ source('staging','citibike_default_data')}}
+    from {{ source('staging','rides')}}
     where ride_id is not null
 )
 
