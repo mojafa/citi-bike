@@ -104,7 +104,7 @@ def write_bq(df: pd.DataFrame) -> None:
         destination_table="citi-bike-385512.citibike_dw.rides",
         credentials=gcp_credentials_block.get_credentials_from_service_account(),
         chunksize=500_000,
-        if_exists="replace",
+        if_exists="append",
     )
 
 @flow
@@ -119,15 +119,15 @@ def web_to_gcs_to_bq():
     #     # month = 4
     #     # for yearmonth in [f"{year}{month:02d}" for month in range(4, 5)] + [f"{year+1}{month:02d}" for month in range(1, 2)]
     # ]
-    # urls = [
-    # "https://s3.amazonaws.com/tripdata/202201-citibike-tripdata.csv.zip",
-    # # "https://s3.amazonaws.com/tripdata/201402-citibike-tripdata.zip",
-    #  ]
     urls = [
-        f"https://s3.amazonaws.com/tripdata/{yearmonth}-citibike-tripdata.csv.zip"
-        for year in range(2020, 2023)
-        for yearmonth in [f"{year}{month:02d}" for month in range(4, 13)] + [f"{year+1}{month:02d}" for month in range(1, 3)]
-    ]
+    "https://s3.amazonaws.com/tripdata/202303-citibike-tripdata.csv.zip",
+    # "https://s3.amazonaws.com/tripdata/201402-citibike-tripdata.zip",
+     ]
+    # urls = [
+    #     f"https://s3.amazonaws.com/tripdata/{yearmonth}-citibike-tripdata.csv.zip"
+    #     for year in range(2022, 2023)
+    #     for yearmonth in [f"{year}{month:02d}" for month in range(12, 13)] + [f"{year+1}{month:02d}" for month in range(1, 3)]
+    # ]
 
     for url in urls:
         data = download_file(url)
