@@ -1,4 +1,4 @@
-![](images/citibike.png)
+![](citibike.png)
 
 # Citi  Bike NYC Data Engineering Project 🚴‍♀️
 This is an end to end data engineering project, This project uses [CItiBike's NYC bikeshare dataset](https://s3.amazonaws.com/tripdata/index.html), Citi Bike is the nation's largest bikeshare program, with 25,000 bikes and over 1,500 stations across Manhattan, Brooklyn, Queens, the Bronx, Jersey City, and Hoboken.
