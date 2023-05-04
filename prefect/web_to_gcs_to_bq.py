@@ -123,6 +123,11 @@ def web_to_gcs_to_bq():
     # "https://s3.amazonaws.com/tripdata/202201-citibike-tripdata.csv.zip",
     # # "https://s3.amazonaws.com/tripdata/201402-citibike-tripdata.zip",
     #  ]
+    urls = [
+        f"https://s3.amazonaws.com/tripdata/{yearmonth}-citibike-tripdata.csv.zip"
+        for year in range(2020, 2023)
+        for yearmonth in [f"{year}{month:02d}" for month in range(4, 13)] + [f"{year+1}{month:02d}" for month in range(1, 3)]
+    ]
 
     for url in urls:
         data = download_file(url)
