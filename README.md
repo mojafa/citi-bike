@@ -119,3 +119,16 @@ You will get 4 tables in Citibike_data_dbt data set
 7.  Data Vizualization and Dashboarding
 - You can now query the data and connect it to looker to visualize the data, when connecting to data source use facts_citibike table to build the data source in looker, dont use partitioned table, as you wont get any data in your report.
 - go to [Looker Studio](https://lookerstudio.google.com/) &rarr; create &rarr; BigQuery &rarr; choose your project, dataset & transformed table.
+
+8. Future work
+- Add tests.
+- Add CI/CD pipeline.
+- Github Actions workflow to run Terraform steps (like
+  [here](https://towardsdatascience.com/git-actions-terraform-for-data-engineers-scientists-gcp-aws-azure-448dc7c60fcc)).
+- Make incremental model, to append only the latest data from each load.
+- Transformations, documentation and data quality tests in dbt.
+- Dashboard status tiles (like [here](https://docs.getdbt.com/docs/deploy/dashboard-status-tiles)).
+- Include `r/dataengineering` subreddit posts.
+- More text analysis with NLP.
+- Use GPU with my VM instance.
+- Streaming process with Kafka and Spark.
