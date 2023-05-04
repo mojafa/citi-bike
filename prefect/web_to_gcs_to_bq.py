@@ -28,20 +28,17 @@ def read_csv(data):
         for csv_file in csv_files:
             with zip_ref.open(csv_file) as f:
                 df = pd.read_csv(f, encoding='latin-1')
-                df['start_station_id'] = pd.to_numeric(df['start_station_id'], errors='coerce').fillna(0)
-                df['end_station_id'] = pd.to_numeric(df['end_station_id'], errors='coerce').fillna(0)
-                print(df.head(2))
-                print(f"columns: {df.dtypes}")
-                print(f"rows: {len(df)}")
                 df_list.append(df)
         df = max(df_list, key=len)
+        df['start_station_id'] = pd.to_numeric(df['start_station_id'], errors='coerce').fillna(0)
+        df['end_station_id'] = pd.to_numeric(df['end_station_id'], errors='coerce').fillna(0)
         return df
 
 @task(log_prints=True, name="Writing to GCS bucket")
 def write_gcs(df, filename, bucket_name):
     """Upload a pandas DataFrame as a parquet file to GCS"""
     gcs_bucket = GcsBucket.load("citibike")
-    gcs_bucket.upload_from_dataframe(df=df, to_path=filename, serialization_format='parquet',timeout=1000)
+    gcs_bucket.upload_from_dataframe(df=df, to_path=filename, serialization_format='parquet_snappy',timeout=1000)
 
 @task(log_prints=True, name="Extracting from GCS bucket")
 def extract_from_gcs() -> pd.DataFrame:
@@ -50,9 +47,14 @@ def extract_from_gcs() -> pd.DataFrame:
     gcs_block = GcsBucket.load("citibike")
     blobs=gcs_block.list_blobs("citi_bike_datalake_citi-bike-385512/")
     df_list = []
+    # for blob in blobs:
+    #     if blob.name.endswith(".parquet"):
+    #         df = pd.read_parquet(f"gs://{blob.bucket.name}/{blob.name}")
+    #         df_list.append(df)
+    # return pd.concat(df_list)
     for blob in blobs:
-        if blob.name.endswith(".parquet"):
-            df = pd.read_parquet(f"gs://{blob.bucket.name}/{blob.name}")
+        if blob.name.endswith(".parquet.snappy"):
+            df = pd.read_parquet(f"gcs://{blob.bucket.name}/{blob.name}")
             df_list.append(df)
     return pd.concat(df_list)
 
@@ -103,6 +105,9 @@ def web_to_gcs_to_bq():
     for url in urls:
         data = download_file(url)
         df = read_csv(data)
+        df['start_station_id'] = pd.to_numeric(df['start_station_id'], errors='coerce').fillna(0)
+        df['end_station_id'] = pd.to_numeric(df['end_station_id'], errors='coerce').fillna(0)
+
         filename = f"{url.split('/')[-1].replace('.zip', '.parquet')}"
         write_gcs(df, filename, bucket_name)
 
