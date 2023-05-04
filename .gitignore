@@ -41,3 +41,9 @@ logs/
 /week_5_batch_processing/code/.idea/
 *.csv.*
 .env
+
+# Default .gitignore content added by dbt Cloud
+target/
+dbt_packages/
+logs/
+# end dbt Cloud content
