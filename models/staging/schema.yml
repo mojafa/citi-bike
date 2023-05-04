@@ -3,9 +3,9 @@ version: 2
 sources:
     - name: staging
       database: citi-bike-385512
-      schema: citibike_data_raw
+      schema: citibike_dw
       tables:
-        - name: citibike_default_data
+        - name: rides
 
 models:
   - name: stg_citibike_data
