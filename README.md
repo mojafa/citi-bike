@@ -23,7 +23,7 @@ The following technologies are used to build this project
 | Column | Description |
 |--------|-------------|
 | r_id | Unique surrogate built using ride_id and started_at |
-| ride_id | Unique ID Assigned to Each Divvy Trip |
+| ride_id | Unique ID Assigned to Each Citibike Trip |
 | rideable_type | Type of bikes user can take out (Docked, Classic, Electric) |
 | started_at  | Start of Trip Date and Time |
 | ended_at | End of Trip Date and Time |
@@ -35,16 +35,16 @@ The following technologies are used to build this project
 |start_lng |Longitude of the Start Station|
 |end_lat |Latitude of the End Station|
 |end_lng |Longitude of the End Station|
-|member_casual | Field with Two Values Indicating Whether the Rider has a Divvy Membership or Paid with Credit Card(Casual)|
+|member_casual | Field with Two Values Indicating Whether the Rider has a Citibike Membership or Paid with Credit Card(Casual)|
 ## Dashboard
 Check out the interactive dashboard [here](https://lookerstudio.google.com/reporting/3f37599d-b72c-4197-9cd3-8ca25288742f)
 
-![](images/divvy_dashboard.PNG)
+![](images/Citibike_dashboard.PNG)
 
 ## Reproduce it yourself
 1. First fork this repo, and clone it to your local environment.
 
-`git clone https://github.com/Fozan-Talat/divvy-bikeshare-de-project.git`
+`git clone https://github.com/mojafa/citi-bike.git`
 
 2. Setup your Google Cloud environment
 - Create a [Google Cloud Platform project](https://console.cloud.google.com/cloud-resource-manager)
@@ -66,8 +66,8 @@ Check out this [link](https://www.youtube.com/watch?v=Hajwnmj0xfQ&list=PL3MmuxUb
 
 3. Install all required dependencies into your environment
 ```bash
-conda create -n divvy_project python=3.10
-conda activate divvy_project
+conda create -n citibike python=3.10
+conda activate citibike
 pip install -r requirements.txt
 ```
 4. Setup your infrastructure
@@ -103,19 +103,19 @@ prefect agent start -q 'default'
 ```bash
 python prefect/web_to_gcs_to_bq.py
 ```
-- After running the flow web_to_gcs_to_bq.py you will find the data at divvy_data_raw.divvy_default_data, the flow will take around 45 mins to complete.
+- After running the flow web_to_gcs_to_bq.py you will find the data at Citibike_data_raw.Citibike_default_data, the flow will take around 45 mins to complete.
 6. Data tranformation and modeling using dbt
 
-`cd` into the dbt/divvy_project directory and run the following command
+`cd` into the dbt/Citibike_project directory and run the following command
 ```bash
 dbt build --var 'is_test_run: false'
 ```
-You will get 4 tables in divvy_data_dbt data set
+You will get 4 tables in Citibike_data_dbt data set
   - dim_neighbourhoods
-  - divvy_stations_lookup
-  - facts_divvy
-  - stg_divvy_data
+  - Citibike_stations_lookup
+  - facts_citibike
+  - stg_citibike_data
 
 7.  Data Vizualization and Dashboarding
-- You can now query the data and connect it to looker to visualize the data, when connecting to data source use facts_divvy table to build the data source in looker, dont use partitioned table, as you wont get any data in your report.
+- You can now query the data and connect it to looker to visualize the data, when connecting to data source use facts_citibike table to build the data source in looker, dont use partitioned table, as you wont get any data in your report.
 - go to [Looker Studio](https://lookerstudio.google.com/) &rarr; create &rarr; BigQuery &rarr; choose your project, dataset & transformed table.
