@@ -39,8 +39,6 @@ The following technologies are used to build this project
 ## Dashboard
 Check out the interactive dashboard [here](https://lookerstudio.google.com/reporting/098a5041-da6f-4c79-b162-f31354da4fcd)
 
-![](images/Citibike_dashboard.PNG)
-
 ## Reproduce it yourself
 1. First fork this repo, and clone it to your local environment.
 
