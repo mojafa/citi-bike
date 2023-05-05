@@ -37,7 +37,7 @@ The following technologies are used to build this project
 |end_lng |Longitude of the End Station|
 |member_casual | Field with Two Values Indicating Whether the Rider has a Citibike Membership or Paid with Credit Card(Casual)|
 ## Dashboard
-Check out the interactive dashboard [here](https://lookerstudio.google.com/reporting/3f37599d-b72c-4197-9cd3-8ca25288742f)
+Check out the interactive dashboard [here](https://lookerstudio.google.com/reporting/098a5041-da6f-4c79-b162-f31354da4fcd)
 
 ![](images/Citibike_dashboard.PNG)
 
@@ -127,7 +127,7 @@ You will get 4 tables in Citibike_data_dbt data set
   [here](https://towardsdatascience.com/git-actions-terraform-for-data-engineers-scientists-gcp-aws-azure-448dc7c60fcc)).
 - Make incremental model, to append only the latest data from each load.
 - Transformations, documentation and data quality tests in dbt.
-- Dashboard status tiles (like [here](https://docs.getdbt.com/docs/deploy/dashboard-status-tiles)).
+- Dashboard status tiles (like [here](https://lookerstudio.google.com/reporting/9bca41ca-1267-40de-b8fa-f477acfb6562)).
 - Include `r/dataengineering` subreddit posts.
 - More text analysis with NLP.
 - Use GPU with my VM instance.
