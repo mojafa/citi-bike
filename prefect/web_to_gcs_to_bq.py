@@ -56,43 +56,6 @@ def write_gcs(df, filename, bucket_name):
     gcs_bucket = GcsBucket.load("citibike")
     gcs_bucket.upload_from_dataframe(df=df, to_path=filename, serialization_format='csv',timeout=1000)
 
-# @task(log_prints=True, name="Extracting from GCS bucket")
-# def extract_from_gcs() -> pd.DataFrame:
-#     """Download and concatenate trip data from GCS"""
-#     gcs_path = "citi_bike_datalake_citi-bike-385512/"
-#     gcs_block = GcsBucket.load("citibike")
-#     blobs=gcs_block.list_blobs("citi_bike_datalake_citi-bike-385512/")
-#     df_list = []
-#     for blob in blobs:
-#         print(blob.name)
-#         if blob.name.endswith(".csv"):
-#             df = pd.read_csv(f"gs://{blob.bucket.name}/{blob.name}")
-#             # df_list.append(df)
-#     # return pd.concat(df_list)
-#     return df
-
-# @task(log_prints=True, name="Transforming Data")
-# def transform(df: pd.DataFrame) -> pd.DataFrame:
-#     """Data cleaning and transformation"""
-#      # df['start_station_id'] = pd.to_numeric(df['start_station_id'], errors='coerce').fillna(0)
-#     #df['end_station_id'] = pd.to_numeric(df['end_station_id'], errors='coerce').fillna(0)
-#     df = df.astype({
-#         "ride_id": "str",
-#         "rideable_type": "str",
-#         "started_at": "datetime64[ns]",
-#         "ended_at": "datetime64[ns]",
-#         "start_station_name": "str",
-#         "start_station_id": "str",
-#         "end_station_name": "str",
-#         "end_station_id": "str",
-#         "start_lat": "float64",
-#         "start_lng": "float64",
-#         "end_lat": "float64",
-#         "end_lng": "float64",
-#         "member_casual": "str"
-#     })
-#     return df
-
 @task(log_prints=True, name="Writing to BQ table")
 def write_bq(df: pd.DataFrame) -> None:
     """Write DataFrame to BiqQuery"""
@@ -110,33 +73,21 @@ def write_bq(df: pd.DataFrame) -> None:
 @flow
 def web_to_gcs_to_bq():
     bucket_name = "citi_bike_datalake_citi-bike-385512"
-
     # urls = [
-    #     f"https://s3.amazonaws.com/tripdata/202104-citibike-tripdata.csv.zip"
-
-    #     # for year in range(2020, 2023)
-    #     # year = 2020
-    #     # month = 4
-    #     # for yearmonth in [f"{year}{month:02d}" for month in range(4, 5)] + [f"{year+1}{month:02d}" for month in range(1, 2)]
-    # ]
+    # "https://s3.amazonaws.com/tripdata/202303-citibike-tripdata.csv.zip",
+    # # "https://s3.amazonaws.com/tripdata/201402-citibike-tripdata.zip",
+    #  ]
     urls = [
-    "https://s3.amazonaws.com/tripdata/202303-citibike-tripdata.csv.zip",
-    # "https://s3.amazonaws.com/tripdata/201402-citibike-tripdata.zip",
-     ]
-    # urls = [
-    #     f"https://s3.amazonaws.com/tripdata/{yearmonth}-citibike-tripdata.csv.zip"
-    #     for year in range(2022, 2023)
-    #     for yearmonth in [f"{year}{month:02d}" for month in range(12, 13)] + [f"{year+1}{month:02d}" for month in range(1, 3)]
-    # ]
+        f"https://s3.amazonaws.com/tripdata/{yearmonth}-citibike-tripdata.csv.zip"
+        for year in range(2020, 2023)
+        for yearmonth in [f"{year}{month:02d}" for month in range(1, 13)] + [f"{year+1}{month:02d}" for month in range(1, 4)]
+    ]
 
     for url in urls:
         data = download_file(url)
         df = read_csv(data)
         filename = f"{url[34:-4]}"
         write_gcs(df, filename, bucket_name)
-
-    # df = extract_from_gcs()
-    # df = transform(df)
     write_bq(df)
 
 if __name__ == "__main__":
