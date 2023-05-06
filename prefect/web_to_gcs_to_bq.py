@@ -74,16 +74,17 @@ def write_bq(df: pd.DataFrame) -> None:
 def web_to_gcs_to_bq():
     bucket_name = "citi_bike_datalake_citi-bike-385512"
     # urls = [
-    #     "https://s3.amazonaws.com/tripdata/202207-citbike-tripdata.csv.zip",
+    #     "https://s3.amazonaws.com/tripdata/202206-citbike-tripdata.csv.zip",
+    #     ""
     # # # "https://s3.amazonaws.com/tripdata/202303-citibike-tripdata.csv.zip",
     # # # # "https://s3.amazonaws.com/tripdata/201402-citibike-tripdata.zip",
 
-    #  ]
-    urls = [
-        f"https://s3.amazonaws.com/tripdata/{yearmonth}-citibike-tripdata.csv.zip"
-        for year in range(2022, 2023)
-        for yearmonth in [f"{year}{month:02d}" for month in range(8, 13)] + [f"{year+1}{month:02d}" for month in range(1, 4)]
-    ]
+    # #  ]
+    # # urls = [
+    # #     f"https://s3.amazonaws.com/tripdata/{yearmonth}-citibike-tripdata.csv.zip"
+    # #     for year in range(2022, 2023)
+    # #     for yearmonth in [f"{year}{month:02d}" for month in range(6, 13)] + [f"{year+1}{month:02d}" for month in range(1, 4)]
+    # # ]
 
     for url in urls:
         data = download_file(url)
